@@ -1,0 +1,234 @@
+{
+  "info": {
+    "name": "ice-stream API",
+    "_postman_id": "a1ce3b08-0000-0000-0000-000000000000",
+    "description": "Postman collection for ice-stream Laravel app. Adjust {{base_url}} to your local environment.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get CSRF Cookie",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/sanctum/csrf-cookie",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "sanctum",
+            "csrf-cookie"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "email",
+              "value": "test@example.com",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "password123",
+              "type": "text"
+            },
+            {
+              "key": "remember",
+              "value": "false",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Current User",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/user",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "user"
+          ]
+        }
+      }
+    },
+    {
+      "name": "List Videos",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/videos",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "videos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Upload Video",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "title",
+              "value": "Sample Video",
+              "type": "text"
+            },
+            {
+              "key": "video",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/videos",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "videos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/logout",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "logout"
+          ]
+        }
+      }
+    }
+  ]
+}
