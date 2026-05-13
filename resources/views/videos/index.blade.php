@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $video->title }} - Ice Stream</title>
+    <title>{{ $videos->first()->title ?? 'Videos' }} - Ice Stream</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -47,7 +47,7 @@
                         controls
                         controlsList="nodownload"
                     >
-                        <source src="{{ asset('storage/videos/' . $video->video_path) }}" type="video/mp4">
+                        <source src="{{ asset('storage/videos/' . $video->first()->video_path) }}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 @else
@@ -72,33 +72,33 @@
             <div class="grid grid-cols-3 gap-8">
                 <div class="col-span-2">
                     <!-- Title & Meta -->
-                    <h1 class="text-4xl font-bold mb-4">{{ $video->title }}</h1>
+                    <h1 class="text-4xl font-bold mb-4">{{ $video->first()->title ?? 'Videos' }}</h1>
                     
                     <div class="flex items-center gap-4 mb-6 text-gray-400">
                         <span class="flex items-center gap-2">
                             <span class="text-cyan-400">👤</span>
-                            {{ $video->creator->name ?? 'Unknown' }}
+                            {{ $video->first()->creator->name ?? 'Unknown' }}
                         </span>
                         <span>•</span>
                         <span class="flex items-center gap-2">
                             <span class="text-cyan-400">📅</span>
-                            {{ $video->created_at->format('M d, Y') }}
+                            {{ $video->first()->created_at->format('M d, Y') }}
                         </span>
                         <span>•</span>
                         <span class="flex items-center gap-2">
                             <span class="text-cyan-400">⏱️</span>
-                            {{ gmdate("H:i:s", $video->duration) }}
+                            {{ gmdate("H:i:s", $video->first()->duration) }}
                         </span>
                         <span>•</span>
                         <span class="bg-cyan-600/30 px-3 py-1 rounded text-cyan-400">
-                            {{ $video->category->name ?? 'N/A' }}
+                            {{ $video->first()->category->name ?? 'N/A' }}
                         </span>
                     </div>
 
                     <!-- Description -->
                     <div class="mb-8">
                         <h3 class="text-xl font-semibold mb-3">Description</h3>
-                        <p class="text-gray-300 leading-relaxed">{{ $video->description }}</p>
+                        <p class="text-gray-300 leading-relaxed">{{ $video->first()->description }}</p>
                     </div>
 
                     <!-- Action Buttons -->
