@@ -3,18 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Video extends Model
 {
-    //
     protected $fillable = [
         'title',
         'video_path',
         'created_by',
+        'category_id',
         'is_trending',
         'rating',
         'description',
         'thumbnail',
-        'duration'
+        'duration',
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }
