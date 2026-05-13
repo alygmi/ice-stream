@@ -11,11 +11,12 @@ class VideoController extends Controller
         // fetch video dengan category
         $video = Video::with(['category', 'creator'])->findOrFail($id);
 
-        // Related videos dari category yang sama (exclude current video)
-        $relatedVideos = Video::where('category_id', $video->category_id)
-            ->where('id', '!=', $video->id)
-            ->limit(6)
-            ->get();
+        // Related: same category when set; otherwise latest other videos
+        $relatedQuery = Video::query()->where('id', '!=', $video->id);
+        if ($video->category_id) {
+            $relatedQuery->where('category_id', $video->category_id);
+        }
+        $relatedVideos = $relatedQuery->latest()->limit(6)->get();
 
         return view('videos.watch', [
             'video' => $video,
