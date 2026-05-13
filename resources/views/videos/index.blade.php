@@ -10,7 +10,7 @@
 <body class="bg-black text-white min-h-screen">
     <nav class="fixed top-0 w-full z-50 bg-black/95 border-b border-gray-700">
         <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80">
+            <a href="{{ route('landing') }}" class="flex items-center gap-3 hover:opacity-80">
                 <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
                     <span class="text-white font-bold text-xl">❄️</span>
                 </div>
@@ -20,7 +20,7 @@
             </a>
 
             <div class="flex items-center gap-6">
-                <a href="/" class="hover:text-gray-300 transition">Home</a>
+                <a href="{{ route('landing') }}" class="hover:text-gray-300 transition">Home</a>
                 <a href="{{ route('videos.index') }}" class="hover:text-gray-300 transition">Browse</a>
                 @auth
                     <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -28,7 +28,7 @@
                         <button type="submit" class="hover:text-gray-300 transition">Logout</button>
                     </form>
                 @else
-                    <a href="/login" class="bg-cyan-500 px-4 py-2 rounded hover:bg-cyan-600 transition">Login</a>
+                    <a href="{{ route('login') }}" class="bg-cyan-500 px-4 py-2 rounded hover:bg-cyan-600 transition">Login</a>
                 @endauth
             </div>
         </div>
@@ -38,7 +38,7 @@
         <h1 class="text-3xl font-bold mb-2">Browse Videos</h1>
         <p class="text-gray-400 mb-8">Filter by category or search by title.</p>
 
-        <form method="get" action="{{ route('videos.index') }}" class="flex flex-col sm:flex-row gap-4 mb-8">
+        <form id="search" method="get" action="{{ route('videos.index') }}" class="flex flex-col sm:flex-row gap-4 mb-8 scroll-mt-28">
             <input
                 type="search"
                 name="search"

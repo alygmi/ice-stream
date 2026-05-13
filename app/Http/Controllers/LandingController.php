@@ -22,10 +22,15 @@ class LandingController extends Controller
             ->limit(6)
             ->get();
 
+        $startVideo = $trendingVideos->first()
+            ?? $newVideos->first()
+            ?? $topRatedVideos->first();
+
         return view('landing', [
             'trendingVideos' => $trendingVideos,
             'newVideos' => $newVideos,
             'topRatedVideos' => $topRatedVideos,
+            'startVideo' => $startVideo,
         ]);
     }
 }
