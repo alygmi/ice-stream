@@ -9,7 +9,7 @@ class VideoController extends Controller
 {
     public function show($id){
         // fetch video dengan category
-        $video = Video::with('category')->findOrFail($id);
+        $video = Video::with(['category', 'creator'])->findOrFail($id);
 
         // Related videos dari category yang sama (exclude current video)
         $relatedVideos = Video::where('category_id', $video->category_id)

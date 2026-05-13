@@ -23,4 +23,9 @@ class Video extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

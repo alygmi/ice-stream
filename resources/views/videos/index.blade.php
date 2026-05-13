@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $videos->first()->title ?? 'Videos' }} - Ice Stream</title>
+    <title>Browse Videos - Ice Stream</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white">
-    <!-- Navigation -->
+<body class="bg-black text-white min-h-screen">
     <nav class="fixed top-0 w-full z-50 bg-black/95 border-b border-gray-700">
         <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
             <a href="/" class="flex items-center gap-3 hover:opacity-80">
@@ -19,10 +18,10 @@
                     ICE STREAM
                 </span>
             </a>
-            
+
             <div class="flex items-center gap-6">
                 <a href="/" class="hover:text-gray-300 transition">Home</a>
-                <a href="/videos" class="hover:text-gray-300 transition">Browse</a>
+                <a href="{{ route('videos.index') }}" class="hover:text-gray-300 transition">Browse</a>
                 @auth
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
@@ -35,123 +34,79 @@
         </div>
     </nav>
 
-    <!-- Video Player Section -->
-    <section class="pt-20 pb-12">
-        <div class="max-w-6xl mx-auto px-6">
-            <!-- Main Video Player -->
-            <div class="relative w-full aspect-video bg-black rounded-lg overflow-hidden mb-8 border border-gray-700">
-                @auth
-                    <video 
-                        id="videoPlayer" 
-                        class="w-full h-full"
-                        controls
-                        controlsList="nodownload"
+    <main class="pt-24 pb-16 px-6 max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-2">Browse Videos</h1>
+        <p class="text-gray-400 mb-8">Filter by category or search by title.</p>
+
+        <form method="get" action="{{ route('videos.index') }}" class="flex flex-col sm:flex-row gap-4 mb-8">
+            <input
+                type="search"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search titles…"
+                class="flex-1 rounded-lg bg-gray-900 border border-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:border-cyan-500 focus:outline-none"
+            >
+            <button type="submit" class="rounded-lg bg-cyan-600 px-6 py-2 font-semibold hover:bg-cyan-500 transition">
+                Search
+            </button>
+        </form>
+
+        @if($categories->isNotEmpty())
+            <div class="flex flex-wrap gap-2 mb-10">
+                <a
+                    href="{{ route('videos.index', array_filter(['search' => request('search')])) }}"
+                    class="rounded-full px-4 py-1.5 text-sm font-medium border transition {{ request('category') ? 'border-gray-600 text-gray-300 hover:border-cyan-500' : 'border-cyan-500 bg-cyan-600/20 text-cyan-300' }}"
+                >
+                    All
+                </a>
+                @foreach($categories as $cat)
+                    <a
+                        href="{{ route('videos.index', array_filter(['category' => $cat->id, 'search' => request('search')])) }}"
+                        class="rounded-full px-4 py-1.5 text-sm font-medium border transition {{ (string) request('category') === (string) $cat->id ? 'border-cyan-500 bg-cyan-600/20 text-cyan-300' : 'border-gray-600 text-gray-300 hover:border-cyan-500' }}"
                     >
-                        <source src="{{ asset('storage/videos/' . $video->first()->video_path) }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                @else
-                    <!-- Login Required Overlay -->
-                    <div class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-10">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4">🔒</div>
-                            <h2 class="text-3xl font-bold mb-4">Login Required</h2>
-                            <p class="text-gray-400 mb-8">Sign in to watch this video</p>
-                            <a href="/login" class="bg-cyan-500 hover:bg-cyan-600 px-8 py-3 rounded-lg font-semibold transition">
-                                Sign In Now
-                            </a>
+                        {{ $cat->name ?? ('Category #' . $cat->id) }}
+                    </a>
+                @endforeach
+            </div>
+        @endif
+
+        @if($videos->isEmpty())
+            <p class="text-gray-500 text-center py-16">No videos found.</p>
+        @else
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                @foreach($videos as $v)
+                    <a href="{{ route('videos.show', $v->id) }}" class="group rounded-xl border border-gray-800 bg-gray-900/40 overflow-hidden hover:border-cyan-600/50 transition">
+                        <div class="aspect-video bg-gradient-to-b from-blue-900/40 to-gray-900 flex items-center justify-center relative">
+                            @if($v->thumbnail)
+                                <img src="{{ asset('storage/' . $v->thumbnail) }}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition">
+                            @endif
+                            <span class="text-5xl relative z-10 drop-shadow-lg">🎬</span>
+                            @if($v->duration)
+                                <span class="absolute bottom-2 right-2 z-10 rounded bg-black/80 px-2 py-0.5 text-xs text-gray-200">
+                                    {{ gmdate('H:i:s', (int) $v->duration) }}
+                                </span>
+                            @endif
                         </div>
-                    </div>
-                    <div class="w-full h-full bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center">
-                        <div class="text-6xl">🎬</div>
-                    </div>
-                @endauth
+                        <div class="p-4">
+                            <h2 class="font-semibold text-white group-hover:text-cyan-400 transition line-clamp-2">{{ $v->title }}</h2>
+                            <p class="mt-2 text-xs text-gray-500">
+                                {{ $v->category->name ?? 'Uncategorized' }}
+                            </p>
+                        </div>
+                    </a>
+                @endforeach
             </div>
 
-            <!-- Video Info -->
-            <div class="grid grid-cols-3 gap-8">
-                <div class="col-span-2">
-                    <!-- Title & Meta -->
-                    <h1 class="text-4xl font-bold mb-4">{{ $video->first()->title ?? 'Videos' }}</h1>
-                    
-                    <div class="flex items-center gap-4 mb-6 text-gray-400">
-                        <span class="flex items-center gap-2">
-                            <span class="text-cyan-400">👤</span>
-                            {{ $video->first()->creator->name ?? 'Unknown' }}
-                        </span>
-                        <span>•</span>
-                        <span class="flex items-center gap-2">
-                            <span class="text-cyan-400">📅</span>
-                            {{ $video->first()->created_at->format('M d, Y') }}
-                        </span>
-                        <span>•</span>
-                        <span class="flex items-center gap-2">
-                            <span class="text-cyan-400">⏱️</span>
-                            {{ gmdate("H:i:s", $video->first()->duration) }}
-                        </span>
-                        <span>•</span>
-                        <span class="bg-cyan-600/30 px-3 py-1 rounded text-cyan-400">
-                            {{ $video->first()->category->name ?? 'N/A' }}
-                        </span>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="mb-8">
-                        <h3 class="text-xl font-semibold mb-3">Description</h3>
-                        <p class="text-gray-300 leading-relaxed">{{ $video->first()->description }}</p>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    @auth
-                        <div class="flex gap-4">
-                            <button class="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 px-6 py-3 rounded-lg font-semibold transition">
-                                <span>❤️</span> Add to Favorites
-                            </button>
-                            <button class="flex items-center gap-2 border border-gray-600 hover:border-cyan-400 px-6 py-3 rounded-lg font-semibold transition">
-                                <span>📝</span> Share
-                            </button>
-                        </div>
-                    @endauth
-                </div>
-
-                <!-- Sidebar -->
-                <div class="col-span-1">
-                    <h3 class="text-xl font-bold mb-4">Related Videos</h3>
-                    <div class="space-y-4">
-                        @forelse($relatedVideos as $related)
-                            <a href="/videos/{{ $related->id }}" class="group flex gap-3 hover:opacity-80 transition">
-                                <div class="flex-shrink-0 w-24 h-16 rounded bg-gradient-to-b from-blue-900/30 to-gray-900 flex items-center justify-center">
-                                    <span class="text-2xl">🎬</span>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="font-semibold text-sm group-hover:text-cyan-400 transition line-clamp-2">
-                                        {{ Str::limit($related->title, 40) }}
-                                    </h4>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        {{ gmdate("H:i:s", $related->duration) }}
-                                    </p>
-                                </div>
-                            </a>
-                        @empty
-                            <p class="text-gray-500 text-sm">No related videos</p>
-                        @endforelse
-                    </div>
-                </div>
+            <div class="mt-10">
+                {{ $videos->withQueryString()->links() }}
             </div>
-        </div>
-    </section>
+        @endif
+    </main>
 
-    <!-- Footer -->
-    <footer class="bg-black border-t border-gray-700 px-6 py-12 mt-12">
+    <footer class="border-t border-gray-800 px-6 py-8">
         <div class="max-w-7xl mx-auto text-center text-gray-500 text-sm">
             <p>&copy; 2026 Ice Stream. All rights reserved.</p>
         </div>
     </footer>
-
-    <style>
-        video::-webkit-media-controls-panel {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-    </style>
 </body>
 </html>
