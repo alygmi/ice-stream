@@ -47,3 +47,4 @@ Route::view('/terms', 'pages.info', [
 ])->name('terms');
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';
