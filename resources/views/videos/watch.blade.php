@@ -10,7 +10,7 @@
 <body class="bg-black text-white">
     <nav class="fixed top-0 w-full z-50 bg-black/95 border-b border-gray-700">
         <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
-            <a href="/" class="flex items-center gap-3 hover:opacity-80">
+            <a href="{{ route('landing') }}" class="flex items-center gap-3 hover:opacity-80">
                 <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
                     <span class="text-white font-bold text-xl">❄️</span>
                 </div>
@@ -20,7 +20,7 @@
             </a>
 
             <div class="flex items-center gap-6">
-                <a href="/" class="hover:text-gray-300 transition">Home</a>
+                <a href="{{ route('landing') }}" class="hover:text-gray-300 transition">Home</a>
                 <a href="{{ route('videos.index') }}" class="hover:text-gray-300 transition">Browse</a>
                 @auth
                     <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -28,7 +28,7 @@
                         <button type="submit" class="hover:text-gray-300 transition">Logout</button>
                     </form>
                 @else
-                    <a href="/login" class="bg-cyan-500 px-4 py-2 rounded hover:bg-cyan-600 transition">Login</a>
+                    <a href="{{ route('login') }}" class="bg-cyan-500 px-4 py-2 rounded hover:bg-cyan-600 transition">Login</a>
                 @endauth
             </div>
         </div>
@@ -53,7 +53,7 @@
                             <div class="text-6xl mb-4">🔒</div>
                             <h2 class="text-3xl font-bold mb-4">Login Required</h2>
                             <p class="text-gray-400 mb-8">Sign in to watch this video</p>
-                            <a href="/login" class="bg-cyan-500 hover:bg-cyan-600 px-8 py-3 rounded-lg font-semibold transition">
+                            <a href="{{ route('login') }}" class="bg-cyan-500 hover:bg-cyan-600 px-8 py-3 rounded-lg font-semibold transition">
                                 Sign In Now
                             </a>
                         </div>
