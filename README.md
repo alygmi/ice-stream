@@ -16,6 +16,47 @@ Aplikasi streaming video berbasis **Laravel 13** + **Vite** (Blade + Tailwind). 
 
 ---
 
+## Git workflow singkat
+
+Jika kamu baru saja commit tapi `git push` mengatakan `Everything up-to-date`, biasanya karena:
+
+1. Kamu sedang berada di branch yang berbeda dari branch yang ingin kamu push.
+2. Branch lokal sudah sinkron dengan remote, tetapi commitmu ada di branch lain.
+3. Kamu belum mem-push branch yang benar ke remote.
+
+Langkah sinkronisasi umum:
+
+```bash
+# lihat branch sekarang
+git branch --show-current
+
+# lihat status dan apakah branch lokal di depan/di belakang remote
+git status -sb
+
+# ambil update terbaru dari remote
+git fetch origin
+
+# push branch saat ini ke remote
+git push origin $(git branch --show-current)
+```
+
+Jika ada perubahan baru di `main` dan kamu ingin ambil ke branch fitur:
+
+```bash
+git checkout main
+git pull origin main
+git checkout nama-branch-mu
+git merge main
+# atau jika ingin rebase:
+# git rebase main
+
+git push origin nama-branch-mu
+```
+
+> Catatan: `git push` hanya akan mengirim commit pada branch yang aktif. Jika kamu berada di `main` tetapi commitmu ada di branch `cursor/video-category-support`, maka `main` akan tampak sudah up to date.
+
+---
+
 ## Menjalankan project (setelah `git pull`)
 
 ### 1. Masuk ke folder project

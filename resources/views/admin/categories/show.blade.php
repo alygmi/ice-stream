@@ -1,53 +1,43 @@
-@extends("admin.layout")
-@section("page_title", $category->name)
-@section("content")
-<div class="grid grid-cols-3 gap-6">
+@extends('admin.layout')
+
+@section('title', $category->name)
+@section('page-title', 'Category Details')
+
+@section('content')
+<div class="grid grid-cols-3 gap-8">
     <div class="col-span-2">
-        <div class="bg-gray-800/30 border border-gray-700 rounded-lg p-6 mb-6">
-            <h1 class="text-3xl font-bold mb-2">{{ $category->name }}</h1>
-            <p class="text-gray-400">{{ $category->description ?? "No description" }}</p>
-            <p class="text-sm text-gray-500 mt-4">{{ $category->videos_count }} video(s) in this category</p>
-        </div>
+        <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-blue-500/30 rounded-xl p-6">
+            <h2 class="text-2xl font-bold mb-4">{{ $category->name }}</h2>
+            <p class="text-gray-400 mb-6">Videos in this category: <span class="text-blue-400 font-bold">{{ count($category->videos) }}</span></p>
 
-        <h2 class="text-xl font-bold mb-4">Videos</h2>
-        <div class="space-y-4">
-            @forelse($videos as $video)
-                <a href="{{ route("admin.videos.show", $video) }}" class="bg-gray-800/30 border border-gray-700 rounded-lg p-4 hover:border-cyan-600 transition flex items-center gap-4">
-                    <div class="w-24 h-16 bg-gray-700 rounded flex-shrink-0 flex items-center justify-center text-xl">
-                        @if($video->thumbnail)
-                            <img src="{{ asset("storage/" . $video->thumbnail) }}" alt="" class="w-full h-full object-cover rounded">
-                        @else
-                            🎬
-                        @endif
+            <div class="grid grid-cols-2 gap-4">
+                @forelse($category->videos as $video)
+                    <div class="bg-slate-700/50 border border-blue-500/20 rounded-lg p-4">
+                        <h3 class="font-semibold truncate mb-2">{{ $video->title }}</h3>
+                        <p class="text-xs text-gray-500">{{ $video->created_at->format('M d, Y') }}</p>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-semibold">{{ $video->title }}</h3>
-                        <p class="text-xs text-gray-500 mt-1">{{ $video->created_at->format("M d, Y") }}</p>
+                @empty
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                        No videos in this category yet
                     </div>
-                </a>
-            @empty
-                <p class="text-gray-400">No videos in this category</p>
-            @endforelse
-        </div>
-
-        <div class="mt-6">
-            {{ $videos->withQueryString()->links() }}
+                @endforelse
+            </div>
         </div>
     </div>
 
     <div class="space-y-4">
-        <a href="{{ route("admin.categories.edit", $category) }}" class="w-full bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg font-semibold transition text-center block">
-            Edit
+        <a href="/admin/categories/{{ $category->id }}/edit" class="block w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 px-6 py-3 rounded-lg font-semibold transition text-center">
+            Edit Category
         </a>
-        <form method="post" action="{{ route("admin.categories.destroy", $category) }}">
+        <form action="/admin/categories/{{ $category->id }}" method="POST" onsubmit="return confirm('Delete this category?')">
             @csrf
-            @method("DELETE")
-            <button type="submit" onclick="return confirm(\"Delete this category?\")" class="w-full bg-red-600/20 hover:bg-red-600/40 border border-red-600 px-4 py-3 rounded-lg font-semibold transition text-red-400">
-                Delete
+            @method('DELETE')
+            <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 px-6 py-3 rounded-lg font-semibold transition">
+                Delete Category
             </button>
         </form>
-        <a href="{{ route("admin.categories.index") }}" class="w-full bg-gray-700 hover:bg-gray-600 px-4 py-3 rounded-lg font-semibold transition text-center block">
-            Back to List
+        <a href="/admin/categories" class="block w-full bg-slate-700 hover:bg-slate-600 px-6 py-3 rounded-lg font-semibold transition text-center">
+            ← Back to Categories
         </a>
     </div>
 </div>

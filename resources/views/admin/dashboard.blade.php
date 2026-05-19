@@ -1,111 +1,98 @@
-@extends("admin.layout")
-@section("page_title", "Dashboard")
-@section("content")
-<div class="space-y-10">
-    <section class="relative overflow-hidden rounded-[2rem] border border-cyan-500/20 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-8 shadow-2xl shadow-cyan-500/10">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.25),_transparent_30%)] pointer-events-none"></div>
-        <div class="relative grid gap-6 lg:grid-cols-[1.5fr_0.9fr] items-center">
-            <div class="space-y-6 text-white">
-                <div class="inline-flex items-center gap-3 rounded-3xl bg-white/5 px-4 py-2 text-sm text-cyan-200 ring-1 ring-white/10">
-                    <span class="text-xl">❄️</span>
-                    Admin Dashboard
+@extends('admin.layout')
+
+@section('title', 'Dashboard')
+@section('page-title', ' Dashboard')
+
+@section('content')
+<div class="grid grid-cols-4 gap-6 mb-12">
+    <!-- Stats Cards -->
+    <div class="bg-gradient-to-br from-cyan-600/20 to-cyan-900/20 border border-cyan-500/30 rounded-xl p-6 hover:border-cyan-400/60 transition">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-gray-400 text-sm font-semibold">Total Videos</h3>
+            <span class="text-2xl"></span>
+        </div>
+        <p class="text-3xl font-bold">{{ $totalVideos ?? 0 }}</p>
+        <p class="text-cyan-400 text-xs mt-2">All videos in system</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-blue-600/20 to-blue-900/20 border border-blue-500/30 rounded-xl p-6 hover:border-blue-400/60 transition">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-gray-400 text-sm font-semibold">Categories</h3>
+            <span class="text-2xl"></span>
+        </div>
+        <p class="text-3xl font-bold">{{ $totalCategories ?? 0 }}</p>
+        <p class="text-blue-400 text-xs mt-2">Content categories</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-purple-600/20 to-purple-900/20 border border-purple-500/30 rounded-xl p-6 hover:border-purple-400/60 transition">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-gray-400 text-sm font-semibold">Trending</h3>
+            <span class="text-2xl"></span>
+        </div>
+        <p class="text-3xl font-bold">{{ $trendingVideos ?? 0 }}</p>
+        <p class="text-purple-400 text-xs mt-2">Trending videos</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-600/20 to-green-900/20 border border-green-500/30 rounded-xl p-6 hover:border-green-400/60 transition">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-gray-400 text-sm font-semibold">Avg Rating</h3>
+            <span class="text-2xl"></span>
+        </div>
+        <p class="text-3xl font-bold">{{ number_format($avgRating ?? 0, 1) }}</p>
+        <p class="text-green-400 text-xs mt-2">Average rating</p>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mb-12">
+    <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
+    <div class="grid grid-cols-3 gap-4">
+        <a href="/admin/videos/create" class="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-700 hover:to-cyan-600 px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2">
+            <span></span> Upload Video
+        </a>
+        <a href="/admin/categories" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2">
+            <span></span> Manage Categories
+        </a>
+        <a href="/admin/videos" class="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2">
+            <span></span> All Videos
+        </a>
+    </div>
+</div>
+
+<!-- Recent Videos -->
+<div>
+    <h2 class="text-xl font-bold mb-4">Recent Videos</h2>
+    <div class="grid grid-cols-3 gap-6">
+        @forelse($recentVideos ?? [] as $video)
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-cyan-500/20 rounded-lg overflow-hidden hover:border-cyan-400/60 transition group">
+                <div class="aspect-video bg-gradient-to-b from-blue-900/30 to-gray-900 flex items-center justify-center relative overflow-hidden">
+                    <span class="text-4xl">🎬</span>
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                        <a href="/admin/videos/{{ $video->id }}/edit" class="bg-cyan-500 hover:bg-cyan-600 text-black rounded px-3 py-2 text-sm font-semibold transition">Edit</a>
+                        <a href="/admin/videos/{{ $video->id }}" class="bg-blue-500 hover:bg-blue-600 text-black rounded px-3 py-2 text-sm font-semibold transition">View</a>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-4xl sm:text-5xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">
-                        Manage your stream with style
-                    </h1>
-                    <p class="mt-4 max-w-2xl text-gray-300 text-lg sm:text-xl">
-                        Kelola video, kategori, dan statistik dalam tampilan modern yang selaras dengan UI landing page Ice Stream.
+                <div class="p-4">
+                    <h3 class="font-semibold truncate text-sm">{{ $video->title }}</h3>
+                    <p class="text-xs text-gray-500 mt-1">
+                        {{ $video->created_at->format('M d, Y') }}
                     </p>
-                </div>
-                <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('admin.videos.index') }}" class="inline-flex items-center justify-center rounded-full bg-cyan-500 px-6 py-3 text-sm font-semibold text-black transition hover:bg-cyan-400">
-                        Lihat Semua Video
-                    </a>
-                    <a href="{{ route('admin.categories.index') }}" class="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-400 hover:text-cyan-300">
-                        Kategori
-                    </a>
-                </div>
-            </div>
-            <div class="grid gap-4 sm:grid-cols-3">
-                <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 text-center shadow-[0_0_80px_-40px_rgba(34,211,238,0.3)]">
-                    <div class="text-sm text-gray-400">Total Videos</div>
-                    <div class="mt-4 text-4xl font-extrabold text-cyan-400">{{ $total_videos }}</div>
-                </div>
-                <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 text-center">
-                    <div class="text-sm text-gray-400">Total Categories</div>
-                    <div class="mt-4 text-4xl font-extrabold text-cyan-400">{{ $total_categories }}</div>
-                </div>
-                <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 text-center">
-                    <div class="text-sm text-gray-400">Admin</div>
-                    <div class="mt-4 text-4xl font-extrabold text-cyan-400">{{ auth()->user()->name }}</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="grid gap-6 xl:grid-cols-[1.5fr_0.9fr]">
-        <div class="rounded-[2rem] border border-gray-700 bg-slate-950/90 p-6 shadow-xl shadow-slate-950/10">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-white">Recent Videos</h2>
-                    <p class="text-gray-400">Update terakhir ditampilkan di sini.</p>
-                </div>
-                <a href="{{ route('admin.videos.index') }}" class="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20">
-                    Lihat Semua
-                </a>
-            </div>
-
-            <div class="mt-6 grid gap-4">
-                @forelse($recent_videos as $video)
-                    <a href="{{ route('admin.videos.show', $video) }}" class="group block overflow-hidden rounded-[1.75rem] border border-gray-700 bg-gradient-to-br from-slate-900 to-gray-950 p-4 transition hover:-translate-y-0.5 hover:border-cyan-500/50">
-                        <div class="flex items-center gap-4">
-                            <div class="flex h-20 w-28 items-center justify-center overflow-hidden rounded-3xl bg-gray-800 text-3xl text-gray-400">
-                                @if($video->thumbnail)
-                                    <img src="{{ asset('storage/' . $video->thumbnail) }}" alt="{{ $video->title }} thumbnail" class="h-full w-full object-cover" />
-                                @else
-                                    🎬
-                                @endif
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h3 class="truncate text-lg font-semibold text-cyan-300">{{ $video->title }}</h3>
-                                <p class="truncate text-sm text-gray-400">{{ $video->category->name ?? 'Uncategorized' }}</p>
-                            </div>
-                            <span class="text-xs text-gray-500">{{ $video->created_at->format('M d, Y') }}</span>
-                        </div>
-                    </a>
-                @empty
-                    <div class="rounded-[1.75rem] border border-gray-700 bg-gray-900/80 p-6 text-center text-gray-400">
-                        Tidak ada video terbaru.
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        <div class="space-y-4">
-            <div class="rounded-[2rem] border border-gray-700 bg-slate-950/90 p-6 shadow-xl shadow-slate-950/10">
-                <h3 class="text-lg font-bold text-white">Quick Actions</h3>
-                <div class="mt-4 grid gap-3">
-                    <a href="{{ route('admin.videos.create') }}" class="rounded-3xl bg-cyan-500 px-4 py-3 text-center font-semibold text-black transition hover:bg-cyan-400">Tambah Video</a>
-                    <a href="{{ route('admin.categories.create') }}" class="rounded-3xl border border-gray-700 bg-white/5 px-4 py-3 text-center font-semibold text-white transition hover:border-cyan-400">Tambah Kategori</a>
-                    <a href="{{ route('admin.videos.index') }}" class="rounded-3xl border border-gray-700 bg-white/5 px-4 py-3 text-center font-semibold text-white transition hover:border-cyan-400">Kelola Video</a>
-                </div>
-            </div>
-
-            <div class="rounded-[2rem] border border-gray-700 bg-slate-950/90 p-6 shadow-xl shadow-slate-950/10">
-                <h3 class="text-lg font-bold text-white">Stats Overview</h3>
-                <div class="mt-4 grid gap-3">
-                    <div class="rounded-3xl bg-gray-900/80 p-4">
-                        <div class="text-sm text-gray-400">Rasio video per kategori</div>
-                        <div class="mt-3 text-3xl font-semibold text-cyan-400">{{ $total_categories ? number_format($total_videos / $total_categories, 1) : '0.0' }}</div>
-                    </div>
-                    <div class="rounded-3xl bg-gray-900/80 p-4">
-                        <div class="text-sm text-gray-400">Video trending kini</div>
-                        <div class="mt-3 text-3xl font-semibold text-cyan-400">{{ $recent_videos->count() }}</div>
+                    <div class="flex items-center gap-2 mt-3 text-xs">
+                        <span class="bg-cyan-600/30 text-cyan-400 px-2 py-1 rounded">
+                            {{ $video->category->name ?? 'N/A' }}
+                        </span>
+                        @if($video->is_trending)
+                            <span class="bg-red-600/30 text-red-400 px-2 py-1 rounded">🔥 Trending</span>
+                        @endif
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        @empty
+            <div class="col-span-3 text-center py-12 text-gray-500">
+                <p class="text-lg">No videos yet</p>
+                <p class="text-sm">Start by <a href="/admin/videos/create" class="text-cyan-400 hover:text-cyan-300">uploading a video</a></p>
+            </div>
+        @endforelse
+    </div>
 </div>
 @endsection
