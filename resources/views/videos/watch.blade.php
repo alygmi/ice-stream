@@ -8,31 +8,60 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black text-white">
-    <nav class="fixed top-0 w-full z-50 bg-black/95 border-b border-gray-700">
-        <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
-            <a href="{{ route('landing') }}" class="flex items-center gap-3 hover:opacity-80">
-                <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
-                    <span class="text-white font-bold text-xl">❄️</span>
-                </div>
-                <span class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
-                    ICE STREAM
-                </span>
-            </a>
-
-            <div class="flex items-center gap-6">
-                <a href="{{ route('landing') }}" class="hover:text-gray-300 transition">Home</a>
-                <a href="{{ route('videos.index') }}" class="hover:text-gray-300 transition">Browse</a>
-                @auth
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="hover:text-gray-300 transition">Logout</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="bg-cyan-500 px-4 py-2 rounded hover:bg-cyan-600 transition">Login</a>
-                @endauth
+    <!-- Navigation Bar Seragam -->
+<nav class="fixed top-0 w-full z-50 bg-black/95 border-b border-gray-700">
+    <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
+        
+        <!-- LOGO -->
+        <a href="{{ Auth::check() ? route('user.homepage') : route('landing') }}" class="flex items-center gap-3 hover:opacity-80 transition">
+            <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
+                <span class="text-white font-bold text-xl">❄️</span>
             </div>
+            <span class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
+                ICE STREAM
+            </span>
+        </a>
+
+        <!-- NAV MENU (Warna teks berubah dinamis sesuai halaman aktif) -->
+        <div class="flex items-center gap-6 text-sm sm:text-base">
+            
+            <!-- Link Home -->
+            <a href="{{ route('user.homepage') }}" 
+               class="transition {{ Route::is('user.homepage') ? 'text-cyan-400 font-semibold' : 'text-gray-400 hover:text-white' }}">
+                Home
+            </a>
+            
+            <!-- Link Movies / Browse -->
+            <a href="{{ route('videos.index') }}" 
+               class="transition {{ Route::is('videos.index') && !request()->text ? 'text-cyan-400 font-semibold' : 'text-gray-400 hover:text-white' }}">
+                Movies
+            </a>
+            
+            <!-- Link My List -->
+            <a href="{{ route('my-list') }}" 
+               class="transition {{ Route::is('my-list') ? 'text-cyan-400 font-semibold' : 'text-gray-400 hover:text-white' }}">
+                My List
+            </a>
+            
+            <!-- Link Search (Mengarahkan ke form search di halaman utama/browse) -->
+            <a href="{{ route('videos.index') }}#search" 
+               class="text-gray-400 hover:text-white transition">
+                Search
+            </a>
+            
+            <!-- Autentikasi Pojok Kanan -->
+            @auth
+                <form method="POST" action="{{ route('logout') }}" class="inline ml-2">
+                    @csrf
+                    <button type="submit" class="text-gray-400 hover:text-red-400 transition">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="bg-cyan-500 px-4 py-2 rounded text-white hover:bg-cyan-600 transition ml-2">Login</a>
+            @endauth
         </div>
-    </nav>
+
+    </div>
+</nav>
 
     <section class="pt-20 pb-12">
         <div class="max-w-6xl mx-auto px-6">
@@ -96,9 +125,18 @@
 
                     @auth
                         <div class="flex gap-4">
-                            <button type="button" class="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 px-6 py-3 rounded-lg font-semibold transition">
-                                <span>❤️</span> Add to Favorites
-                            </button>
+                            <!-- Form pengeksekusi fungsi toggle -->
+                            <form action="{{ route('videos.favorite', $video->id) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition {{ Auth::user()->favoriteVideos->contains($video->id) ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-cyan-500 text-white hover:bg-cyan-600' }}">
+                                    @if(Auth::user()->favoriteVideos->contains($video->id))
+                                        <span>💔</span> Remove from My List
+                                    @else
+                                        <span>❤️</span> Add to list
+                                    @endif
+                                </button>
+                            </form>
+
                             <button type="button" class="flex items-center gap-2 border border-gray-600 hover:border-cyan-400 px-6 py-3 rounded-lg font-semibold transition">
                                 <span>📝</span> Share
                             </button>

@@ -9,9 +9,12 @@
 </head>
 <body class="bg-black text-white">
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black via-black/80 to-transparent">
+    <!-- Navigation Bar Seragam -->
+    <nav class="fixed top-0 w-full z-50 bg-black/95 border-b border-gray-700">
         <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto w-full">
-            <a href="{{ route('landing') }}" class="flex items-center gap-3 hover:opacity-90 transition">
+            
+            <!-- LOGO -->
+            <a href="{{ Auth::check() ? route('user.homepage') : route('landing') }}" class="flex items-center gap-3 hover:opacity-80 transition">
                 <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
                     <span class="text-white font-bold text-xl">❄️</span>
                 </div>
@@ -20,20 +23,44 @@
                 </span>
             </a>
 
+            <!-- NAV MENU (Warna teks berubah dinamis sesuai halaman aktif) -->
             <div class="flex items-center gap-6 text-sm sm:text-base">
-                <a href="{{ route('landing') }}" class="hover:text-gray-300 transition">Home</a>
-                <a href="{{ route('videos.index') }}" class="hover:text-gray-300 transition">Movies</a>
-                <a href="{{ route('my-list') }}" class="hover:text-gray-300 transition">My List</a>
-                <a href="{{ route('videos.index') }}#search" class="hover:text-gray-300 transition">Search</a>
+                
+                <!-- Link Home -->
+                <a href="{{ route('user.homepage') }}" 
+                class="transition {{ Route::is('user.homepage') ? 'text-cyan-400 font-semibold' : 'text-gray-400 hover:text-white' }}">
+                    Home
+                </a>
+                
+                <!-- Link Movies / Browse -->
+                <a href="{{ route('videos.index') }}" 
+                class="transition {{ Route::is('videos.index') && !request()->text ? 'text-cyan-400 font-semibold' : 'text-gray-400 hover:text-white' }}">
+                    Movies
+                </a>
+                
+                <!-- Link My List -->
+                <a href="{{ route('my-list') }}" 
+                class="transition {{ Route::is('my-list') ? 'text-cyan-400 font-semibold' : 'text-gray-400 hover:text-white' }}">
+                    My List
+                </a>
+                
+                <!-- Link Search (Mengarahkan ke form search di halaman utama/browse) -->
+                <a href="{{ route('videos.index') }}#search" 
+                class="text-gray-400 hover:text-white transition">
+                    Search
+                </a>
+                
+                <!-- Autentikasi Pojok Kanan -->
                 @auth
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                    <form method="POST" action="{{ route('logout') }}" class="inline ml-2">
                         @csrf
-                        <button type="submit" class="hover:text-gray-300 transition">Logout</button>
+                        <button type="submit" class="text-gray-400 hover:text-red-400 transition">Logout</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="text-cyan-400 hover:text-cyan-300 transition">Login</a>
+                    <a href="{{ route('login') }}" class="bg-cyan-500 px-4 py-2 rounded text-white hover:bg-cyan-600 transition ml-2">Login</a>
                 @endauth
             </div>
+
         </div>
     </nav>
 
@@ -60,7 +87,7 @@
                 <p class="text-lg text-gray-400 mb-10 max-w-2xl mx-auto">Watch your favorite shows and movies in stunning quality. Stream unlimited content anytime, anywhere.</p>
 
                 <div class="flex flex-wrap gap-4 justify-center">
-                    @if($startVideo)
+                    @if(isset($startVideo) && $startVideo)
                         <a href="{{ route('videos.show', $startVideo->id) }}" class="inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 px-8 py-4 rounded-lg font-bold text-lg transition transform hover:scale-105">
                             ▶ Start Watching
                         </a>

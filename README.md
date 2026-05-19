@@ -215,15 +215,40 @@ Selesai tanpa konflik, baru:
 git push origin main
 ```
 
-### Popup Windows Credential Manager
+### UPDATE DARI IZAZ
 
-Itu Windows yang minta **login ke GitHub** untuk HTTPS. Pilih salah satu:
+setelah pull selalu jalan database migration, data seeder, running serve, npm run build dulu baru kalo mau ada perubahan css jalankan lagi npm run dev sisanya ya seperti pada umumnya(sesuaikan database, env, dan laninnya)
 
-- Login akun GitHub lewat jendela itu, atau  
-- Pakai **Personal Access Token** sebagai “password” (GitHub → Settings → Developer settings → Tokens), atau  
-- Pakai **SSH** (`git@github.com:...`) supaya tidak sering pakai Credential Manager untuk HTTPS.
+test registrasi user baru
 
----
+**penambahan dan perbaikan bug:**
+
+management role user&admin
+
+redirect awal ke halaman login, memaksa siapapun ketika akses harus login dulu(belum ada sistem coocies, cache, atau session ya)
+ceritanya bayar dulu gtu:)
+
+perbaikan bug direct URL
+
+keamanan akses URL
+
+tampilan ui/ux, navbar user, navbar admin
+
+integrasi tabel admin dashboard, video, category
+
+kemanan login
+
+halaman registrasi dan fitur autentikasi lainnnya
+
+add to list film : user
+
+**user seeder**
+
+user: admin@gmail.com
+pwd: admin123
+
+user: user@gmail.com
+pwd: user123
 
 ## Lisensi
 

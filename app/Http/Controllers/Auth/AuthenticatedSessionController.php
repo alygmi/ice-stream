@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class AuthenticatedSessionController extends Controller
 {
+    /**
+     * Display the login view.
+     */
     public function create(): View
     {
         return view('auth.login');
@@ -19,23 +22,28 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): SymfonyResponse
+    public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        if ($request->expectsJson()) {
-            return response()->noContent();
+        // HAPUS MEMORI INTENDED URL AGAR TIDAK SALAH LEMPAR KETIKA BERGANTI ROLE DI TAB YANG SAMA
+        $request->session()->forget('url.intended');
+
+        $user = $request->user();
+
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
         }
 
-        return redirect()->intended(route('landing'));
+        return redirect()->route('user.homepage');
     }
 
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): SymfonyResponse
+    public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
@@ -43,10 +51,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        if ($request->expectsJson()) {
-            return response()->noContent();
-        }
-
-        return redirect()->route('landing');
+        return redirect('/');
     }
 }

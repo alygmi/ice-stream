@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Video;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // Tambahkan ini di atas
 
 class VideoController extends Controller
 {
-    public function show($id){
-        // fetch video dengan category
-        $video = Video::with(['category', 'creator'])->findOrFail($id);
+    public function show(int|string $id){
+    $video = Video::with(['category', 'creator'])->findOrFail($id);
 
         // Related: same category when set; otherwise latest other videos
         $relatedQuery = Video::query()->where('id', '!=', $video->id);
@@ -46,5 +46,42 @@ class VideoController extends Controller
             'categories' => $categories
         ]);
     }
-}
 
+    /**
+     * Fitur Tambah/Hapus Favorites (Web Version)
+     */
+    public function toggleFavorite(int|string $id)
+    {
+        if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'You must be logged in to do that.');
+        }
+
+        $video = Video::findOrFail($id);
+        
+        /** @var \App\Models\User $user */
+        $user = Auth::user(); // Komentar di atas memberi tahu VS Code tipe data pastinya
+
+        // Sekarang Intelephense dijamin tidak akan protes lagi
+        $user->favoriteVideos()->toggle($video->id);
+
+        $isFavorite = $user->favoriteVideos()->where('video_id', $video->id)->exists();
+        $message = $isFavorite ? 'Video added to your My List!' : 'Video removed from your My List!';
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    public function myList()
+    {
+        // Beri proteksi jika diakses lewat URL tanpa login
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
+        $favoriteVideos = $user->favoriteVideos()->with('category')->latest()->get();
+
+        return view('my-list', compact('favoriteVideos'));
+    }
+}

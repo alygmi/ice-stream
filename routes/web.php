@@ -1,50 +1,68 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\Admin\DashboardController;
 
-Route::get('/', [App\Http\Controllers\LandingController::class, 'index'])->name('landing');
+// =========================================================================
+// RUTE PUBLIK & TAMU (Sebelum Login)
+// =========================================================================
 
-Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
-Route::get('/videos/{id}', [VideoController::class, 'show'])->name('videos.show');
+// Halaman login utama
+Route::get('/', function () {
+    // Jika sudah login, cegah melihat form login lagi, langsung arahkan sesuai role
+    if (auth()->check()) {
+        return auth()->user()->role === 'admin' 
+            ? redirect()->route('admin.dashboard') 
+            : redirect()->route('user.homepage');
+    }
+    return view('auth.login');
+})->name('landing');
 
-Route::view('/my-list', 'my-list')->name('my-list');
+// Halaman informasi statis
+Route::view('/about', 'pages.info', ['title' => 'About', 'heading' => 'About Ice Stream', 'body' => 'Ice Stream is a demo streaming...'])->name('about');
+Route::view('/blog', 'pages.info', ['title' => 'Blog', 'heading' => 'Blog', 'body' => 'No posts yet...'])->name('blog');
+Route::view('/help', 'pages.info', ['title' => 'Help Center', 'heading' => 'Help Center', 'body' => 'Need help?...'])->name('help');
+Route::view('/support', 'pages.info', ['title' => 'Support', 'heading' => 'Support', 'body' => 'For technical support...'])->name('support');
+Route::view('/privacy', 'pages.info', ['title' => 'Privacy', 'heading' => 'Privacy', 'body' => 'This demo app may store...'])->name('privacy');
+Route::view('/terms', 'pages.info', ['title' => 'Terms', 'heading' => 'Terms of use', 'body' => 'Ice Stream is provided as-is...'])->name('terms');
 
-Route::view('/about', 'pages.info', [
-    'title' => 'About',
-    'heading' => 'About Ice Stream',
-    'body' => 'Ice Stream is a demo streaming-style experience for browsing and watching videos. This page is here so the footer and navigation links on the home page go somewhere useful.',
-])->name('about');
 
-Route::view('/blog', 'pages.info', [
-    'title' => 'Blog',
-    'heading' => 'Blog',
-    'body' => 'No posts yet. Check back later, or head to Browse to watch something now.',
-])->name('blog');
+// =========================================================================
+// RUTE PROTEKSI AUTH (Wajib Login Terlebih Dahulu)
+// =========================================================================
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    // -----------------------------------------------------------------
+    // RUTE KHUSUS ADMIN (Menggunakan RoleManager lewat alias 'role')
+    // -----------------------------------------------------------------
+    Route::middleware(['role:admin'])->prefix('admin')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    });
 
-Route::view('/help', 'pages.info', [
-    'title' => 'Help Center',
-    'heading' => 'Help Center',
-    'body' => 'Need help? Use Browse to find a title, open it, and press play (you may need to sign in). For account issues, contact your administrator.',
-])->name('help');
+    // -----------------------------------------------------------------
+    // RUTE KHUSUS USER BIASA
+    // -----------------------------------------------------------------
+    Route::middleware(['role:user'])->group(function () {
+        Route::get('/home', [HomeController::class, 'index'])->name('user.homepage');
+        Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
+        Route::get('/videos/{id}', [VideoController::class, 'show'])->name('videos.show');
+        Route::get('/my-list', [VideoController::class, 'myList'])->name('my-list');
+    });
 
-Route::view('/support', 'pages.info', [
-    'title' => 'Support',
-    'heading' => 'Support',
-    'body' => 'For technical support, describe what you were doing and what you expected to happen. You can continue exploring from the home page or Browse.',
-])->name('support');
+    // Akses universal (Admin & User)
+    Route::post('/videos/{id}/favorite', [VideoController::class, 'toggleFavorite'])->name('videos.favorite');
 
-Route::view('/privacy', 'pages.info', [
-    'title' => 'Privacy',
-    'heading' => 'Privacy',
-    'body' => 'This demo app may store basic account and session data needed to sign you in. Do not upload sensitive personal content unless you trust this environment.',
-])->name('privacy');
+    // Profile Management
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-Route::view('/terms', 'pages.info', [
-    'title' => 'Terms',
-    'heading' => 'Terms of use',
-    'body' => 'Ice Stream is provided as-is for demonstration. Content and availability are not guaranteed. Use responsibly and in line with your local laws.',
-])->name('terms');
-
-require __DIR__.'/auth.php';
+// =========================================================================
+// BERKAS RUTE EKSTERNAL
+// =========================================================================
+require __DIR__.'/auth.php';  
 require __DIR__.'/admin.php';

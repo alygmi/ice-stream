@@ -6,17 +6,24 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class IsAdmin
+class IsAdmin // atau nama middleware role Anda
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->role === 'admin') {
-            return $next($request);
+        // 1. Cek apakah user belum login sama sekali
+        if (!auth()->check()) {
+            return redirect()->route('login');
         }
 
-        abort(403, 'Unauthorized. Admin access required.');
+        // 2. Jika SUDAH login, tapi rolenya BUKAN admin
+        if (auth()->user()->role !== 'admin') {
+            // Langsung kunci dengan 403 Forbidden (Akses Ditolak)
+            abort(403, 'Unauthorized. Admin access required.');
+            
+            // ATAU jika ingin lebih aman (pura-pura rute tidak ada), gunakan:
+            // abort(404);
+        }
+
+        return $next($request);
     }
 }

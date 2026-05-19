@@ -12,7 +12,7 @@
     <div class="fixed left-0 top-0 h-screen w-64 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-cyan-500/20 z-50">
         <!-- Logo -->
         <div class="p-6 border-b border-cyan-500/20">
-            <a href="/admin" class="flex items-center gap-3 hover:opacity-80 transition">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 hover:opacity-80 transition">
                 <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
                     <span class="text-white font-bold text-xl">❄️</span>
                 </div>
@@ -25,29 +25,37 @@
             </a>
         </div>
 
-        <!-- Navigation Menu -->
+        <!-- Navigation Menu (PERBAIKAN: Seluruh area kotak bisa diklik & pencocokan rute akurat) -->
         <nav class="p-4 space-y-2">
-            <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->is('admin') ? 'bg-cyan-600/20 border-l-2 border-cyan-400' : 'hover:bg-slate-700/50 text-gray-400' }} transition">
-                <span class="text-xl"></span>
+            <!-- Dashboard -->
+            <a href="{{ route('admin.dashboard') }}" 
+               class="flex items-center gap-3 px-4 py-3 rounded-lg w-full select-none cursor-pointer transition {{ request()->is('admin/dashboard') ? 'bg-cyan-600/20 border-l-2 border-cyan-400 text-cyan-400 font-semibold' : 'hover:bg-slate-700/50 text-gray-400 hover:text-white' }}">
+                <span class="text-xl">📊</span>
                 <span>Dashboard</span>
             </a>
-            <a href="/admin/videos" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->is('admin/videos*') ? 'bg-cyan-600/20 border-l-2 border-cyan-400' : 'hover:bg-slate-700/50 text-gray-400' }} transition">
-                <span class="text-xl"></span>
+
+            <!-- Videos -->
+            <a href="{{ route('admin.videos.index') }}" 
+               class="flex items-center gap-3 px-4 py-3 rounded-lg w-full select-none cursor-pointer transition {{ request()->is('admin/videos*') ? 'bg-cyan-600/20 border-l-2 border-cyan-400 text-cyan-400 font-semibold' : 'hover:bg-slate-700/50 text-gray-400 hover:text-white' }}">
+                <span class="text-xl">🎬</span>
                 <span>Videos</span>
             </a>
-            <a href="/admin/categories" class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->is('admin/categories*') ? 'bg-cyan-600/20 border-l-2 border-cyan-400' : 'hover:bg-slate-700/50 text-gray-400' }} transition">
-                <span class="text-xl"></span>
+
+            <!-- Categories -->
+            <a href="{{ route('admin.categories.index') }}" 
+               class="flex items-center gap-3 px-4 py-3 rounded-lg w-full select-none cursor-pointer transition {{ request()->is('admin/categories*') ? 'bg-cyan-600/20 border-l-2 border-cyan-400 text-cyan-400 font-semibold' : 'hover:bg-slate-700/50 text-gray-400 hover:text-white' }}">
+                <span class="text-xl">🗂️</span>
                 <span>Categories</span>
             </a>
         </nav>
 
-        <!-- Logout -->
+        <!-- Logout (PERBAIKAN: Seluruh area tombol responsif) -->
         <div class="absolute bottom-6 left-4 right-4">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-400 transition border border-red-500/30">
-                    <span class="text-xl"></span>
-                    <span>Logout</span>
+                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-400 transition border border-red-500/30 cursor-pointer select-none">
+                    <span class="text-xl">🚪</span>
+                    <span class="font-semibold">Logout</span>
                 </button>
             </form>
         </div>
@@ -60,8 +68,9 @@
             <div class="px-8 py-4 flex items-center justify-between">
                 <h1 class="text-2xl font-bold">@yield('page-title', 'Dashboard')</h1>
                 <div class="flex items-center gap-4">
-                    <a href="/" class="text-gray-400 hover:text-cyan-400 transition flex items-center gap-2">
-                        <span></span>
+                    <!-- Back to Home: Mengarah dinamis ke homepage user -->
+                    <a href="{{ route('user.homepage') }}" class="text-gray-400 hover:text-cyan-400 transition flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-slate-800/50">
+                        <span>🏠</span>
                         <span>Back to Home</span>
                     </a>
                 </div>
